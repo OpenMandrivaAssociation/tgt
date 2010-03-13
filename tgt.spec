@@ -1,9 +1,9 @@
 %bcond_without iser
-%bcond_without fcoe
+%bcond_with fcoe
 
 Name:           tgt
 Version:        1.0.2
-Release:        %mkrel 2
+Release:        %mkrel 3
 Summary:        The SCSI target daemon and utility programs
 Group:          Networking/Other
 License:        GPL
@@ -22,7 +22,7 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}
 %if %with iser
 BuildRequires:	libibverbs-devel
 BuildRequires:	librdmacm-devel
-Suggests:	libibverbs1, librdmacm1
+Suggests:	libibverbs1, librdmacm
 %endif
 
 %description
