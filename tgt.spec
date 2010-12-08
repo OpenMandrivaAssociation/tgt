@@ -3,7 +3,7 @@
 
 Name:           tgt
 Version:        1.0.2
-Release:        %mkrel 3
+Release:        %mkrel 4
 Summary:        The SCSI target daemon and utility programs
 Group:          Networking/Other
 License:        GPL
