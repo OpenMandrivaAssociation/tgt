@@ -1,0 +1,45 @@
+diff -p -up tgt-1.0.2/usr/fcoe/fcoe_if.c.warnings tgt-1.0.2/usr/fcoe/fcoe_if.c
+--- tgt-1.0.2/usr/fcoe/fcoe_if.c.warnings	2010-02-26 02:53:18.000000000 +0000
++++ tgt-1.0.2/usr/fcoe/fcoe_if.c	2010-03-13 08:42:51.854550364 +0000
+@@ -193,7 +193,7 @@ int fcoe_create_interface(char *ifname)
+ 	snprintf(fdev->drv_info.vendor, 64, FCOE_DRIVER_VENDOR);
+ 	snprintf(fdev->drv_info.model_desc, 64, FCOE_DRIVER_NAME);
+ /* 	snprintf(fdev->drv_info.drv_version, 64, BUILD_VERSION); */
+-	snprintf(fdev->drv_info.drv_name, 64, fdev->ifname);
++	snprintf(fdev->drv_info.drv_name, 64, "%s", fdev->ifname);
+ 
+ 	fdev->dev_stats[0] = zalloc(sizeof(struct fcoe_dev_stats));
+ 
+diff -p -up tgt-1.0.2/usr/iscsi/iscsid.c.warnings tgt-1.0.2/usr/iscsi/iscsid.c
+--- tgt-1.0.2/usr/iscsi/iscsid.c.warnings	2010-02-26 02:53:18.000000000 +0000
++++ tgt-1.0.2/usr/iscsi/iscsid.c	2010-03-13 08:40:59.944670650 +0000
+@@ -2270,7 +2270,7 @@ static int iscsi_transportid(int tid, ui
+ 
+ 	put_unaligned_be16(len - 4, buf + 2);
+ 
+-	sprintf(buf + 4, session->initiator);
++	sprintf(buf + 4, "%s", session->initiator);
+ 
+ 	p = buf + (4 + strlen(session->initiator) + 1);
+ 
+diff -p -up tgt-1.0.2/usr/iscsi/isns.c.warnings tgt-1.0.2/usr/iscsi/isns.c
+--- tgt-1.0.2/usr/iscsi/isns.c.warnings	2010-02-26 02:53:18.000000000 +0000
++++ tgt-1.0.2/usr/iscsi/isns.c	2010-03-13 08:40:59.944670650 +0000
+@@ -316,7 +316,7 @@ static int isns_attr_query(char *name)
+ 	tlv = (struct isns_tlv *) hdr->pdu;
+ 
+ 	if (name)
+-		snprintf(mgmt->name, sizeof(mgmt->name), name);
++		snprintf(mgmt->name, sizeof(mgmt->name), "%s", name);
+ 	else {
+ 		mgmt->name[0] = '\0';
+ 		target = list_first_entry(&iscsi_targets_list,
+@@ -690,7 +690,7 @@ found:
+ 				ini = malloc(sizeof(*ini));
+ 				if (!ini)
+ 					goto free_qry_mgmt;
+-				snprintf(ini->name, sizeof(ini->name), name);
++				snprintf(ini->name, sizeof(ini->name), "%s", name);
+ 				list_add(&ini->ilist, &target->isns_list);
+ 			} else
+ 				name = NULL;
