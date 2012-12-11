@@ -2,8 +2,8 @@
 %bcond_with fcoe
 
 Name:           tgt
-Version:        1.0.2
-Release:        %mkrel 4
+Version:        1.0.33
+Release:        1
 Summary:        The SCSI target daemon and utility programs
 Group:          Networking/Other
 License:        GPL
@@ -11,17 +11,11 @@ URL:            http://stgt.sourceforge.net/
 Source0:        http://stgt.sourceforge.net/releases/%{name}-%{version}.tar.gz
 # initscript stolen from fedora
 Source1:        tgtd.init
-# from git
-Patch100:	tgt-1.0.2-tgtimg_man.patch
-# Patch1 adapted from fedora
-Patch1:         scsi-target-utils-dynamic-link-iser.patch
-Patch2:		tgt-1.0.2-warnings.patch
-# Patch3 from debian
-Patch3:		make-tgt-setup-lun-executable
-BuildRoot:	%{_tmppath}/%{name}-%{version}
 %if %with iser
 BuildRequires:	libibverbs-devel
 BuildRequires:	librdmacm-devel
+buildrequires:  librdmacm
+buildrequires:  xsltproc
 Suggests:	libibverbs1, librdmacm
 %endif
 
@@ -31,14 +25,6 @@ Currently, software iSCSI targets are supported.
 
 %prep
 %setup -q -n tgt-%{version}
-%patch100 -p1
-%if %with iser
-%patch1 -p1 -b .dynamic-link-iser
-%endif
-%patch2 -p1 -b .warnings
-%patch3 -p1 -b .perl
-
-sed -i -e 's/-g -O2/$(RPM_OPT_FLAGS)/' usr/Makefile
 
 %build
 %make RPM_OPT_FLAGS="%{optflags} -fno-strict-aliasing" \
@@ -61,9 +47,6 @@ install %{SOURCE1} %{buildroot}%{_initrddir}/tgtd
 %preun
 %_preun_service tgtd
 
-%clean
-rm -fr %{buildroot}
-
 %files
 %defattr(-, root, root)
 %doc README doc/README.* doc/*.txt conf/examples/*
@@ -75,4 +58,17 @@ rm -fr %{buildroot}
 %{_mandir}/man8/*
 %{_initrddir}/tgtd
 %config(noreplace) %{_sysconfdir}/tgt/targets.conf
-%exclude %{_sysconfdir}/tgt/examples
+%{_sysconfdir}/tgt/examples
+
+
+%changelog
+* Sat Mar 13 2010 Luca Berra <bluca@mandriva.org> 1.0.2-2mdv2010.1
++ Revision: 518663
+- add FCOE support
+- really make iSer optional
+- make tgt-setup-lun executable (debian)
+
+* Fri Mar 12 2010 Luca Berra <bluca@mandriva.org> 1.0.2-1mdv2010.1
++ Revision: 518602
+- create tgt
+
