@@ -27,6 +27,8 @@ Currently, software iSCSI targets are supported.
 %autosetup -p1
 
 %build
+export CC=gcc
+export CXX=g++
 %make_build 
 
 %install
