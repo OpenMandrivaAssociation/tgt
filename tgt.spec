@@ -56,15 +56,15 @@ export CXX=g++
 pushd usr
 %make_install PREFIX=%{_prefix}
 
-%post
-%systemd_post tgtd.service
+#post
+#systemd_post tgtd.service
 
-%preun
-%systemd_preun tgtd.service
+#preun
+#systemd_preun tgtd.service
 
-%postun
+#postun
 # don't restart daemon on upgrade
-%systemd_postun
+#systemd_postun
 
 %files
 %doc README doc/README.iscsi doc/README.iser doc/README.lu_configuration doc/README.mmc doc/README.ssc
