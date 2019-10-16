@@ -15,7 +15,8 @@ Source5:        tgtd.conf
 BuildRequires:  docbook-style-xsl
 BuildRequires:  libaio-devel
 BuildRequires:  libxslt-devel
-BuildRequires:  systemd-devel
+BuildRequires:  pkgconfig(systemd)
+BuildRequires:  pkgconfig(libsystemd)
 BuildRequires:  xsltproc
 
 %description
