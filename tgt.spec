@@ -1,74 +1,81 @@
-%bcond_without iser
-%bcond_with fcoe
-
 Name:           tgt
-Version:        1.0.33
-Release:        2
+Version:        1.0.79
+Release:        1
 Summary:        The SCSI target daemon and utility programs
+License:        GPLv2
 Group:          Networking/Other
-License:        GPL
 URL:            http://stgt.sourceforge.net/
-Source0:        http://stgt.sourceforge.net/releases/%{name}-%{version}.tar.gz
-# initscript stolen from fedora
-Source1:        tgtd.init
-%if %with iser
-BuildRequires:	libibverbs-devel
-BuildRequires:	librdmacm-devel
-buildrequires:  librdmacm
-buildrequires:  xsltproc
-Suggests:	libibverbs1, librdmacm
-%endif
+Source0:        https://github.com/fujita/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source1:        tgtd.service
+Source2:        sysconfig.tgtd
+Source3:        targets.conf
+Source4:        sample.conf
+Source5:        tgtd.conf
+
+BuildRequires:  docbook-style-xsl
+BuildRequires:  libaio-devel
+BuildRequires:  libxslt-devel
+BuildRequires:  systemd-devel
+BuildRequires:  xsltproc
 
 %description
 The SCSI target package contains the daemon and tools to setup a SCSI targets.
 Currently, software iSCSI targets are supported.
 
 %prep
-%setup -q -n tgt-%{version}
+%autosetup -p1
 
 %build
-%make RPM_OPT_FLAGS="%{optflags} -fno-strict-aliasing" \
-%if %with iser
-ISCSI_RDMA=1 \
-%endif
-%if %with fcoe
-FCOE=1 \
-%endif
-ISCSI=1
+%make_build 
 
 %install
-make install DESTDIR=%{buildroot}
-mkdir -p %{buildroot}%{_initrddir}
-install %{SOURCE1} %{buildroot}%{_initrddir}/tgtd
+%{__rm} -rf %{buildroot}
+%{__install} -d %{buildroot}%{_sbindir}
+%{__install} -d %{buildroot}%{_mandir}/man5
+%{__install} -d %{buildroot}%{_mandir}/man8
+%{__install} -d %{buildroot}%{_unitdir}
+%{__install} -d %{buildroot}%{_sysconfdir}/tgt
+%{__install} -d %{buildroot}%{_sysconfdir}/tgt/conf.d
+%{__install} -d %{buildroot}%{_sysconfdir}/sysconfig
+
+%{__install} -p -m 0755 scripts/tgt-setup-lun %{buildroot}%{_sbindir}
+%{__install} -p -m 0755 %{SOURCE1} %{buildroot}%{_unitdir}
+%{__install} -p -m 0755 scripts/tgt-admin %{buildroot}/%{_sbindir}/tgt-admin
+%{__install} -p -m 0644 doc/manpages/targets.conf.5 %{buildroot}/%{_mandir}/man5
+%{__install} -p -m 0644 doc/manpages/tgtadm.8 %{buildroot}/%{_mandir}/man8
+%{__install} -p -m 0644 doc/manpages/tgt-admin.8 %{buildroot}/%{_mandir}/man8
+%{__install} -p -m 0644 doc/manpages/tgt-setup-lun.8 %{buildroot}/%{_mandir}/man8
+%{__install} -p -m 0600 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/tgtd
+%{__install} -p -m 0600 %{SOURCE3} %{buildroot}%{_sysconfdir}/tgt
+%{__install} -p -m 0600 %{SOURCE4} %{buildroot}%{_sysconfdir}/tgt/conf.d
+%{__install} -p -m 0600 %{SOURCE5} %{buildroot}%{_sysconfdir}/tgt
+
+pushd usr
+%make_install PREFIX=%{_prefix}
 
 %post
-%_post_service tgtd
+%systemd_post tgtd.service
 
 %preun
-%_preun_service tgtd
+%systemd_preun tgtd.service
+
+%postun
+# don't restart daemon on upgrade
+%systemd_postun
 
 %files
-%defattr(-, root, root)
-%doc README doc/README.* doc/*.txt conf/examples/*
-%{_sbindir}/tgtd
-%{_sbindir}/tgtadm
+%doc README doc/README.iscsi doc/README.iser doc/README.lu_configuration doc/README.mmc doc/README.ssc
 %{_sbindir}/tgt-setup-lun
 %{_sbindir}/tgt-admin
+%{_sbindir}/tgtadm
 %{_sbindir}/tgtimg
+%{_sbindir}/tgtd
+%{_mandir}/man5/*
 %{_mandir}/man8/*
-%{_initrddir}/tgtd
-%config(noreplace) %{_sysconfdir}/tgt/targets.conf
-%{_sysconfdir}/tgt/examples
-
-
-%changelog
-* Sat Mar 13 2010 Luca Berra <bluca@mandriva.org> 1.0.2-2mdv2010.1
-+ Revision: 518663
-- add FCOE support
-- really make iSer optional
-- make tgt-setup-lun executable (debian)
-
-* Fri Mar 12 2010 Luca Berra <bluca@mandriva.org> 1.0.2-1mdv2010.1
-+ Revision: 518602
-- create tgt
-
+%{_unitdir}/tgtd.service
+%{_sysconfdir}/tgt
+%{_sysconfdir}/tgt/conf.d
+%attr(0600,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/tgtd
+%attr(0600,root,root) %config(noreplace) %{_sysconfdir}/tgt/targets.conf
+%attr(0600,root,root) %config(noreplace) %{_sysconfdir}/tgt/tgtd.conf
+%attr(0600,root,root) %config(noreplace) %{_sysconfdir}/tgt/conf.d/sample.conf
