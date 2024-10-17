@@ -4,7 +4,7 @@ Release:        2
 Summary:        The SCSI target daemon and utility programs
 License:        GPLv2
 Group:          Networking/Other
-URL:            http://stgt.sourceforge.net/
+URL:            https://stgt.sourceforge.net/
 Source0:        https://github.com/fujita/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 Source1:        tgtd.service
 Source2:        sysconfig.tgtd
