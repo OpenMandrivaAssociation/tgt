@@ -12,6 +12,7 @@ Source3:        targets.conf
 Source4:        sample.conf
 Source5:        tgtd.conf
 
+BuildRequires:	make
 BuildRequires:  docbook-style-xsl
 BuildRequires:  libaio-devel
 BuildRequires:  libxslt-devel
