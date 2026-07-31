@@ -1,6 +1,6 @@
 Name:           tgt
-Version:        1.0.79
-Release:        2
+Version:        1.0.97
+Release:        1
 Summary:        The SCSI target daemon and utility programs
 License:        GPLv2
 Group:          Networking/Other
